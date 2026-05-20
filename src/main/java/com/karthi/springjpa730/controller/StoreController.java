@@ -28,5 +28,12 @@ public class StoreController {
     public Store findStore(@PathVariable Integer id){
         return storeService.findStore(id);
     }
+//    Some code
+
+
+
+
+
+
 
 }
