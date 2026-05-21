@@ -32,7 +32,7 @@ public class StoreService {
             existingStore.setStoreCategory(store.getStoreCategory());
             existingStore.setStorePhone(store.getStorePhone());
             existingStore.setStoreEmail(store.getStoreEmail());
-            return storeRepo.save(store);
+            return storeRepo.save(existingStore);
         }
         return null;
     }
