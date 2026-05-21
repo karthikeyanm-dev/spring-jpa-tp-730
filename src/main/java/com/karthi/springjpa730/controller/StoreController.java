@@ -28,8 +28,21 @@ public class StoreController {
     public Store findStore(@PathVariable Integer id){
         return storeService.findStore(id);
     }
-//    Some code
 
+    @PutMapping("/stores/{id}")
+    public Store updateStore(@RequestBody Store updateStoreData, @PathVariable Integer id){
+        Store updatedStore = storeService.updateStore(updateStoreData, id);
+        if(updatedStore != null){
+            return updatedStore;
+        }
+        return new Store(-1);
+    }
+
+
+    @DeleteMapping("/stores/{id}")
+    public String deleteStore(@PathVariable Integer id){
+        return storeService.deleteStore(id) ? "Store Deleted" : "Store Not Deleted and Store is Not available ";
+    }
 
 
 
