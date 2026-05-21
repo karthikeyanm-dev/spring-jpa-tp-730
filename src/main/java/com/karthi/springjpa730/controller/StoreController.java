@@ -45,6 +45,12 @@ public class StoreController {
     }
 
 
+    @GetMapping("/stores/search")
+    public List<Store> findByKeyword(@RequestParam String keyword){
+        return storeService.findAllStoreByKeyword(keyword);
+    }
+
+
 
 
 

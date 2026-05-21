@@ -45,4 +45,10 @@ public class StoreService {
         }
         return false;
     }
+
+
+    public List<Store> findAllStoreByKeyword(String keyword){
+        return storeRepo.searchAllFields(keyword);
+    }
+
 }
