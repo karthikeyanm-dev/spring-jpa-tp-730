@@ -3,8 +3,11 @@ package com.karthi.springjpa730.controller;
 import com.karthi.springjpa730.model.Store;
 import com.karthi.springjpa730.service.StoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 @RestController
@@ -15,44 +18,73 @@ public class StoreController {
     StoreService  storeService;
 
     @PostMapping("/register")
-    public Store registerStore(@RequestBody Store store){
-        return storeService.saveStore(store);
+    public ResponseEntity<Store> registerStore(@RequestBody Store store){
+        Store savedData =  storeService.saveStore(store);
+        return new ResponseEntity<>(savedData, HttpStatus.CREATED);
     }
 
     @GetMapping("/stores")
-    public List<Store> allStores(){
-        return storeService.findAllStore();
+    public ResponseEntity<?> allStores(){
+        List<Store> allStores =  storeService.findAllStore();
+        HashMap<String,Object> storeMap = new HashMap<>();
+
+        if(allStores.size() > 0){
+            storeMap.put("totalStore" , allStores.size());
+            storeMap.put("stores",allStores);
+            return new ResponseEntity<>(storeMap,HttpStatus.OK); // Return all Datas
+        }
+        storeMap.put("totalStores",0);
+        return new ResponseEntity<>(storeMap, HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/stores/{id}")
-    public Store findStore(@PathVariable Integer id){
-        return storeService.findStore(id);
+    public ResponseEntity<?> findStore(@PathVariable Integer id){
+        Store fetchedData = storeService.findStore(id);
+
+        HashMap<String,Object> map =  new HashMap<>();
+
+        if(fetchedData == null){
+            map.put("message", "Store not found for the given ID : " +id);
+            return  new ResponseEntity<>(map,HttpStatus.NOT_FOUND);
+        }
+        map.put("data",fetchedData);
+        return  new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     @PutMapping("/stores/{id}")
-    public Store updateStore(@RequestBody Store updateStoreData, @PathVariable Integer id){
+    public ResponseEntity<?> updateStore(@RequestBody Store updateStoreData, @PathVariable Integer id){
         Store updatedStore = storeService.updateStore(updateStoreData, id);
         if(updatedStore != null){
-            return updatedStore;
+            return new ResponseEntity<>(updatedStore, HttpStatus.OK) ;
         }
-        return new Store(-1);
+//        Create map and you can send in entity
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
 
     @DeleteMapping("/stores/{id}")
-    public String deleteStore(@PathVariable Integer id){
-        return storeService.deleteStore(id) ? "Store Deleted" : "Store Not Deleted and Store is Not available ";
+    public ResponseEntity<?> deleteStore(@PathVariable Integer id){
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("message", "Store not found for the given ID : " +id);
+        return storeService.deleteStore(id) ?
+                new ResponseEntity<>(HttpStatus.OK) :
+                new  ResponseEntity<>(map,HttpStatus.NOT_FOUND);
     }
 
 
     @GetMapping("/stores/search")
-    public List<Store> findByKeyword(@RequestParam String keyword){
-        return storeService.findAllStoreByKeyword(keyword);
+    public ResponseEntity<?> findByKeyword(@RequestParam String keyword){
+        List<Store> allStores = storeService.findAllStoreByKeyword(keyword);
+
+        HashMap<String,Object> storeMap = new HashMap<>();
+
+        if(allStores.size() > 0){
+            storeMap.put("totalStore" , allStores.size());
+            storeMap.put("stores",allStores);
+            return new ResponseEntity<>(storeMap,HttpStatus.OK); // Return all relevant Data
+        }
+        storeMap.put("totalStores",0);
+        return new ResponseEntity<>(storeMap, HttpStatus.NOT_FOUND);
     }
-
-
-
-
-
 
 }
